@@ -43,16 +43,12 @@ def run_inference_on_image():
         header += "," + label.upper()
     file.write(header + "\n")
 
-    image_data = []
-    for imagePath in create_image_lists(imageDir):
-        image_data.append(tf.gfile.FastGFile(imagePath, 'rb').read())
-
     # Creates graph from saved GraphDef.
     create_graph()
 
     with tf.Session() as sess:
 
-        for imagePath in sorted(create_image_lists(imageDir))[:5]:
+        for imagePath in sorted(create_image_lists(imageDir)):
             image_data = tf.gfile.FastGFile(imagePath, 'rb').read()
             softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
             predictions = sess.run(softmax_tensor,
