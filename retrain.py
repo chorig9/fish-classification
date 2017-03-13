@@ -39,7 +39,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.util import compat
 
 FLAGS = None
-
+CURRENT = os.path.dirname(__file__)
 # These are all parameters that are tied to the particular model architecture
 # we're using for Inception v3. These include things like tensor names and their
 # sizes. If you want to adapt this script to work with another model, you will
@@ -55,7 +55,7 @@ MODEL_INPUT_DEPTH = 3
 JPEG_DATA_TENSOR_NAME = 'DecodeJpeg/contents:0'
 RESIZED_INPUT_TENSOR_NAME = 'ResizeBilinear:0'
 MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
-BOX_ANNOTATIONS_PATH = '/home/igor/fish/all.json'
+BOX_ANNOTATIONS_PATH = os.path.join(CURRENT, 'annotations/all.json')
 
 
 def create_annotations():
@@ -637,7 +637,7 @@ def add_final_training_ops(final_tensor_name, bottleneck_tensor):
     layer_name = 'final_training_ops'
     with tf.name_scope(layer_name):
         with tf.name_scope('weights'):
-            layer_weights = tf.Variable(tf.truncated_normal([4096, 4], stddev=0.001),
+            layer_weights = tf.Variable(tf.truncated_normal([BOTTLENECK_TENSOR_SIZE, 4], stddev=0.001),
                                         name='final_weights')
             variable_summaries(layer_weights)
         with tf.name_scope('biases'):
