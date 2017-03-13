@@ -40,6 +40,8 @@ from tensorflow.python.util import compat
 
 FLAGS = None
 
+CURRENT = os.path.dirname(__file__)
+
 # These are all parameters that are tied to the particular model architecture
 # we're using for Inception v3. These include things like tensor names and their
 # sizes. If you want to adapt this script to work with another model, you will
@@ -55,7 +57,7 @@ MODEL_INPUT_DEPTH = 3
 JPEG_DATA_TENSOR_NAME = 'DecodeJpeg/contents:0'
 RESIZED_INPUT_TENSOR_NAME = 'ResizeBilinear:0'
 MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
-BOX_ANNOTATIONS_PATH = '/home/igor/fish/all.json'
+BOX_ANNOTATIONS_PATH = os.path.join(CURRENT, 'annotations/all.json')
 
 
 def create_annotations():

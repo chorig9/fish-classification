@@ -7,9 +7,9 @@ from matplotlib import patches
 from tensorflow.python.platform import gfile
 import matplotlib.pyplot as plt
 
-home = os.path.expanduser('~')
-imageDir = os.path.join(home, 'fish/test_stg1')
-modelFullPath = os.path.join(home, 'fish/output_graph.pb')
+CURRENT = os.path.dirname(__file__)
+imageDir = os.path.join(CURRENT, 'test_stg1')
+modelFullPath = os.path.join(CURRENT, 'output_graph.pb')
 
 
 def create_image_lists(image_dir):
@@ -49,9 +49,9 @@ def run_inference_on_image():
 
             predictions = predictions[0]
             x = predictions[0]
-            y = predictions[1]
-            width = predictions[1] - predictions[0]
-            height = predictions[3] - predictions[2]
+            width = predictions[1]
+            y = predictions[2]
+            height = predictions[3]
 
             rect = patches.Rectangle((x, y), width, height, linewidth=1, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
