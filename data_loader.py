@@ -23,6 +23,8 @@ def get_train_data_for_localization():
     # Create X and Y
     for image_path in filepaths:
         image = cv2.imread(image_path)
+        image = cv2.resize(image, (1280, 720))
+
         image_data.append(image)
 
         filename = os.path.basename(image_path)
