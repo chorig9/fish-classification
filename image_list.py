@@ -6,7 +6,7 @@ import tflearn as tf
 from tensorflow.python.platform import gfile
 
 CURRENT = os.path.dirname(__file__)
-BOX_ANNOTATIONS_PATH = CURRENT + 'annotations/all.json'
+BOX_ANNOTATIONS_PATH = os.path.join(CURRENT, 'annotations', 'all.json')
 
 def create_annotations():
     """

@@ -31,4 +31,4 @@ def get_train_data_for_localization():
     # Return X and Y for regression
     return image_data, bounding_box_data
 
-get_images_data()
+get_train_data_for_localization()
