@@ -26,7 +26,7 @@ X, Y = next(data_generator)
 #img_aug.add_random_rotation(max_angle=25.)
 
 # Convolutional network building
-network = input_data(shape=[None, 1280, 720, 3])
+network = input_data(shape=[None, 100, 100, 3])
 network = conv_2d(network, 32, 3, activation='relu')
 network = max_pool_2d(network, 2)
 network = conv_2d(network, 64, 3, activation='relu')
@@ -34,10 +34,9 @@ network = conv_2d(network, 64, 3, activation='relu')
 network = max_pool_2d(network, 2)
 network = fully_connected(network, 512, activation='relu')
 network = dropout(network, 0.5)
-network = fully_connected(network, 10, activation='softmax')
+network = fully_connected(network, 4, activation='linear')
 network = regression(network, optimizer='adam',
-                     loss='categorical_crossentropy',
-                     learning_rate=0.001)
+                     learning_rate=0.001, loss='mean_square')
 
 # Train using classifier
 model = tflearn.DNN(network, tensorboard_verbose=0)

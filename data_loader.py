@@ -24,7 +24,7 @@ def get_train_data_for_localization():
     counter = 1
     for image_path in filepaths:
         image = cv2.imread(image_path)
-        image = cv2.resize(image, (1280, 720))
+        image = cv2.resize(image, (100, 100))
 
         image_data.append(image)
         counter = counter + 1
@@ -39,6 +39,5 @@ def get_train_data_for_localization():
             image_data = []
             bounding_box_data = []
 
-    return image_data, bounding_box_data
 
 get_train_data_for_localization()
