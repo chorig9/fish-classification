@@ -15,6 +15,7 @@ net = network.Network()
 # Train using classifier
 model = net.get_model()
 
+# Load previously trained network snapshot
 model.load('localize_network.net')
 
 model.fit(X, Y, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
