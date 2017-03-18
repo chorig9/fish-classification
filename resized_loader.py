@@ -17,7 +17,8 @@ def resize_images(image_list, output_dir=resized_output):
         np.save(path, image)
 
 
-def get_resized_input_data(image_dir=resized_output, annotations=image_list.create_annotations()):
+def get_resized_input_data(image_dir=resized_output, annotations=image_list.create_annotations(), ret_filepaths=False):
+    filepaths = []
     X = []
     Y = []
     image_list = os.listdir(image_dir)
@@ -26,9 +27,13 @@ def get_resized_input_data(image_dir=resized_output, annotations=image_list.crea
         path = os.path.join(image_dir, image)
         name = image[:-4] #remove .npy
 
+        filepaths.append(path[:-4])
         X.append(np.load(path))
         Y.append(annotations[name])
 
-    return X, Y
+    if ret_filepaths:
+        return filepaths, X, Y
+    else:
+        return X, Y
 
 #resize_images(image_list.create_image_list())

@@ -2,11 +2,21 @@ from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.estimator import regression
 import tensorflow as tf
+import tflearn
 
 class Network:
 
-    def l2_loss(self, y_pred, y_true):
-        return tf.nn.l2_loss(y_pred - y_true)
+    def l2_loss(self, y_pred, y_true, x = None):
+        with tf.name_scope('L2Accuracy'):
+            return tf.nn.l2_loss(y_pred - y_true)
+
+    def accuracy(self, y_pred, y_true, x = None):
+        with tf.name_scope('InsideAccuracy'):
+            conditions = [False, True, False, True]
+            a = tf.where(conditions, tf.matrix_transpose(y_pred), tf.matrix_transpose(y_true))
+            b = tf.where(not conditions, tf.matrix_transpose(y_pred), tf.matrix_transpose(y_true))
+            ok = tf.reduce_all(tf.greater(a, b), axis=0)
+            return tf.cast(tf.count_nonzero(ok), tf.float32)
 
     def get_model(self):
         # Convolutional network building
@@ -25,5 +35,8 @@ class Network:
         network = dropout(network, 0.5)
         network = fully_connected(network, 4, activation='linear')
         network = regression(network, optimizer='adam',
-                             learning_rate=0.001, loss=self.l2_loss, metric=self.l2_loss)
-        return network
+                             learning_rate=0.001, loss=self.l2_loss, metric=self.accuracy)
+
+        model = tflearn.DNN(network, tensorboard_verbose=0)
+
+        return model
