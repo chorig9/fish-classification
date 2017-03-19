@@ -8,7 +8,9 @@ class Network:
 
     def l2_loss(self, y_pred, y_true, x = None):
         with tf.name_scope('L2Accuracy'):
-            return tf.nn.l2_loss(y_pred - y_true)
+            squared = tf.reduce_sum(tf.square(y_pred - y_true), axis=1)
+            l2_distance = tf.sqrt(squared)
+            return tf.reduce_mean(l2_distance)
 
     def accuracy(self, y_pred, y_true, x = None):
         with tf.name_scope('InsideAccuracy'):
