@@ -1,13 +1,14 @@
 import random
 import numpy as np
 
-def split_data(X, Y, p, seed=1337):
+def split_data(X, Y, p, seed=1337, fpaths=None, ret_filepaths=False):
     """
     X - data
     Y - labels
     p - percent of testing data e.g. 0.1 = 10%
 
-    Returns X_train, Y_train, X_test, Y_test
+    Returns X_train, Y_train, X_test, Y_test, (opt)filepaths
+    filepaths - contains paths for VALIDATION SET
     """
 
     dataset_size = len(X)
@@ -15,6 +16,7 @@ def split_data(X, Y, p, seed=1337):
 
     X_test = []
     Y_test = []
+    filepaths = []
 
     random.seed(seed)
     for n in range(testset_size):
@@ -27,4 +29,11 @@ def split_data(X, Y, p, seed=1337):
         Y_test.append(Y[r])
         del Y[r]
 
-    return X, Y, X_test, Y_test
+        if fpaths is not None:
+            filepaths.append(fpaths[r])
+            del fpaths[r]
+        
+    if ret_filepaths:
+        return X, Y, X_test, Y_test, filepaths
+    else:
+        return X, Y, X_test, Y_test

@@ -23,21 +23,18 @@ class Network:
     def get_model(self):
         # Convolutional network building
         network = input_data(shape=[None, 144, 256, 3])
-        network = conv_2d(network, 32, 3, activation='relu')
+        network = conv_2d(network, 64, 2, activation='relu')
+        network = conv_2d(network, 16, 2, activation='relu')
         network = max_pool_2d(network, 2)
-        network = conv_2d(network, 4, 3, activation='relu')
+        network = conv_2d(network, 16, 2, activation='relu')
+        network = conv_2d(network, 8, 2, activation='relu')
         network = max_pool_2d(network, 2)
-        network = conv_2d(network, 4, 3, activation='relu')
-        network = max_pool_2d(network, 2)
-        network = conv_2d(network, 4, 3, activation='relu')
-        network = max_pool_2d(network, 2)
-        network = conv_2d(network, 4, 3, activation='relu')
-        network = max_pool_2d(network, 2)
-        network = fully_connected(network, 128, activation='relu')
-        network = dropout(network, 0.5)
+        network = conv_2d(network, 4, 2, activation='relu')
+        network = fully_connected(network, 256, activation='relu')
+        #network = dropout(network, 0.5)
         network = fully_connected(network, 4, activation='linear')
-        network = regression(network, optimizer='momentum',
-                             learning_rate=0.001, loss=self.l2_loss, metric=self.accuracy)
+        network = regression(network, optimizer='adam',
+                             learning_rate=0.0001, loss=self.l2_loss, metric=self.accuracy)
 
         model = tflearn.DNN(network, tensorboard_verbose=0)
 
