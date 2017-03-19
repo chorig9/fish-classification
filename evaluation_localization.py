@@ -23,15 +23,13 @@ def run_inference_on_image():
     fig = plt.figure()
     ax = fig.add_subplot(111, aspect='equal')
 
-    for n in range(len(filepaths)):
-        im2 = np.load(filepaths[n]+".npy")
+    for path, input in zip(filepaths, input_vectors):
+        im2 = np.load(path +".npy")
         ax.imshow(im2)
         plt.pause(5)
-        im = np.array(Image.open(filepaths[n].replace('resized', 'all')), dtype=np.uint8)
+        im = np.array(Image.open(path.replace('resized', 'all')), dtype=np.uint8)
         ax.imshow(im)
-        buf = []
-        buf.append(input_vectors[n])
-        predictions = model.predict(buf)
+        predictions = model.predict([input])
         print(predictions)
 
         predictions = predictions[0]
