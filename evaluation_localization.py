@@ -7,7 +7,7 @@ import network
 
 def run_inference_on_image():
 
-    data.resize_images_and_annotations()
+    #data.resize_images_and_annotations()
 
     net = network.Network()
     model = net.get_model()
