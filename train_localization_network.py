@@ -22,4 +22,3 @@ model.fit(X, Y, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
           show_metric=True, batch_size=50, run_id='bounding_box_network')
 
 model.save('localize_network.net')
-
