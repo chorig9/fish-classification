@@ -5,22 +5,23 @@ import numpy as np
 from tensorflow.python.platform import gfile
 
 workspace = os.path.dirname(__file__)
-box_annotations_path = os.path.join(workspace, 'annotations', 'all.json')
+original_annotation_path = os.path.join(workspace, 'annotations', 'all.json')
+box_annotations_path = os.path.join(workspace, 'annotations', 'resized_all.json')
 image_dir = os.path.join(workspace, 'train', 'all')
 resized_output = os.path.join(workspace, 'train', 'resized')
 
 
-def create_annotations(path=box_annotations_path):
+def create_annotations():
     """
     Returns:
         dictionary containing annotation box for every filename
     """
-    with open(path) as data_file:
+    with open(original_annotation_path) as data_file:
         bounding_box_data = json.load(data_file)
 
     annotations = {}
     for element in bounding_box_data:
-        filename = element['filename']
+        filename = os.path.basename(element['filename'])
 
         xstart = element['annotations'][0]['x']
         width = element['annotations'][0]['width']
@@ -31,12 +32,12 @@ def create_annotations(path=box_annotations_path):
     return annotations
 
 
-def load_annotations(path=box_annotations_path):
-    with open(path) as data_file:
+def load_annotations():
+    with open(box_annotations_path) as data_file:
         return json.load(data_file)
 
 
-def create_image_list(annotations=load_annotations()):
+def create_image_list(annotations):
     extension = 'jpg'
     image_list = []
     file_glob = os.path.join(image_dir, '*.' + extension)
@@ -48,20 +49,20 @@ def create_image_list(annotations=load_annotations()):
     return image_list
 
 
-def resize_images_and_annotations(image_list=create_image_list(), annotations=load_annotations()):
+def resize_images_and_annotations(image_list, annotations):
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
-        print(path)
         height, width, _ = image.shape
 
         basename = os.path.basename(image_name)
         x_axis = annotations[basename][:2]
-        y_axis = annotations[basename][:-2]
+        y_axis = annotations[basename][-2:]
 
         x_axis *= round(1280 / width)
         y_axis *= round(720 / height)
 
+        print(basename)
         annotations[basename] = x_axis + y_axis
 
         image = cv2.resize(image, (1280, 720))
@@ -71,7 +72,7 @@ def resize_images_and_annotations(image_list=create_image_list(), annotations=lo
         json.dump(annotations, data_file)
 
 
-def resize_images_to_npy(width, height, image_list=create_image_list()):
+def resize_images_to_npy(width, height, image_list):
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
@@ -81,7 +82,7 @@ def resize_images_to_npy(width, height, image_list=create_image_list()):
         np.save(resized_path, image)
 
 
-def get_resized_input_data(image_list, annotations=load_annotations()):
+def get_resized_input_data(image_list, annotations):
     X = []
     Y = []
     for image in image_list:
@@ -99,3 +100,10 @@ def get_resized_image_path(imagename):
 
 def get_image_path(imagename):
     return os.path.join(image_dir, imagename)
+
+
+if __name__ == "__main__":
+    annotations = create_annotations()
+    image_list = create_image_list(annotations)
+    resize_images_and_annotations(image_list, annotations)
+    resize_images_to_npy(256, 144, image_list)

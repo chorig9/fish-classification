@@ -1,13 +1,13 @@
 from __future__ import division, print_function, absolute_import
 
-import numpy as np
-import tflearn
-import tensorflow as tf
-import resized_loader
+import data
 from utils import *
 import network
 
-X, Y = resized_loader.get_resized_input_data()
+annotations = data.load_annotations()
+filepaths = data.create_image_list(annotations)
+
+X, Y = data.get_resized_input_data(filepaths, annotations)
 X, Y, X_test, Y_test = split_data(X, Y, 0.1)
 
 net = network.Network()
