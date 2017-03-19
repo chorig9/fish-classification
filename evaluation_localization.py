@@ -7,57 +7,44 @@ from matplotlib import patches
 from tensorflow.python.platform import gfile
 import matplotlib.pyplot as plt
 
-CURRENT = os.path.dirname(__file__)
-imageDir = os.path.join(CURRENT, 'test_stg1')
-modelFullPath = os.path.join(CURRENT, 'output_graph.pb')
-
-
-def create_image_lists(image_dir):
-  extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']
-  file_list = []
-  for extension in extensions:
-    file_glob = os.path.join(image_dir, '*.' + extension)
-    file_list.extend(gfile.Glob(file_glob))
-  return file_list
-
-
-def create_graph():
-    """Creates a graph from saved GraphDef file and returns a saver."""
-    # Creates graph from saved graph_def.pb.
-    with tf.gfile.FastGFile(modelFullPath, 'rb') as f:
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(f.read())
-        _ = tf.import_graph_def(graph_def, name='')
-
+import network
+from resized_loader import *
+import tflearn
+import cv2
 
 def run_inference_on_image():
-    # Creates graph from saved GraphDef.
-    create_graph()
 
-    with tf.Session() as sess:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, aspect='equal')
+    net = network.Network()
+    model = net.get_model()
+    model.load('localize_network.net')
 
-        for imagePath in sorted(create_image_lists(imageDir)):
-            image_data = tf.gfile.FastGFile(imagePath, 'rb').read()
-            boxes_values = sess.graph.get_tensor_by_name('final_result:0')
-            predictions = sess.run(boxes_values,
-                                   {'DecodeJpeg/contents:0': image_data})
+    filepaths, input_vectors, labels = get_resized_input_data(ret_filepaths=True)
 
-            im = np.array(Image.open(imagePath), dtype=np.uint8)
-            ax.imshow(im)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, aspect='equal')
 
-            predictions = predictions[0]
-            x = predictions[0]
-            width = predictions[1]
-            y = predictions[2]
-            height = predictions[3]
+    for n in range(len(filepaths)):
+        im2 = np.load(filepaths[n]+".npy")
+        ax.imshow(im2)
+        plt.pause(5)
+        im = np.array(Image.open(filepaths[n].replace('resized', 'all')), dtype=np.uint8)
+        ax.imshow(im)
+        buf = []
+        buf.append(input_vectors[n])
+        predictions = model.predict(buf)
+        print(predictions)
 
-            rect = patches.Rectangle((x, y), width, height, linewidth=1, edgecolor='r', facecolor='none')
-            ax.add_patch(rect)
+        predictions = predictions[0]
+        x = predictions[0]
+        width = predictions[1]
+        y = predictions[2]
+        height = predictions[3]
 
-            plt.pause(0.5)
-            plt.cla()
+        rect = patches.Rectangle((x, y), width, height, linewidth=1, edgecolor='r', facecolor='none')
+        ax.add_patch(rect)
+
+        plt.pause(0.5)
+        plt.cla()
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ from tensorflow.python.platform import gfile
 
 CURRENT = os.path.dirname(__file__)
 BOX_ANNOTATIONS_PATH = os.path.join(CURRENT, 'annotations', 'all.json')
+IMAGE_DIR = os.path.join(CURRENT, 'train', 'all')
 
 def create_annotations():
     """
@@ -28,7 +29,7 @@ def create_annotations():
 
     return annotations
 
-def create_image_list(image_dir, annotations):
+def create_image_list(image_dir=IMAGE_DIR, annotations=create_annotations()):
   extension = 'jpg'
   image_list = []
   file_glob = os.path.join(image_dir, '*.' + extension)
