@@ -1,33 +1,30 @@
 import numpy as np
-import tensorflow as tf
-import os
-
 from PIL import Image
 from matplotlib import patches
-from tensorflow.python.platform import gfile
+import data
 import matplotlib.pyplot as plt
-
 import network
-from resized_loader import *
-import tflearn
-import cv2
 
 def run_inference_on_image():
+
+    data.resize_images_and_annotations()
 
     net = network.Network()
     model = net.get_model()
     model.load('localize_network.net')
 
-    filepaths, input_vectors, labels = get_resized_input_data(ret_filepaths=True)
+    filepaths = data.create_image_list()
+
+    input_vectors, labels = data.get_resized_input_data(filepaths)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, aspect='equal')
 
-    for path, input in zip(filepaths, input_vectors):
-        im2 = np.load(path +".npy")
+    for imagename, input in zip(filepaths, input_vectors):
+        im2 = np.load(data.get_resized_image_path(imagename))
         ax.imshow(im2)
         plt.pause(5)
-        im = np.array(Image.open(path.replace('resized', 'all')), dtype=np.uint8)
+        im = np.array(Image.open(data.get_image_path(imagename)), dtype=np.uint8)
         ax.imshow(im)
         predictions = model.predict([input])
         print(predictions)
