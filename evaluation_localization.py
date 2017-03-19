@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import network
 from resized_loader import *
 import tflearn
+import cv2
 
 def run_inference_on_image():
 
@@ -23,7 +24,9 @@ def run_inference_on_image():
     ax = fig.add_subplot(111, aspect='equal')
 
     for n in range(len(filepaths)):
-
+        im2 = np.load(filepaths[n]+".npy")
+        ax.imshow(im2)
+        plt.pause(5)
         im = np.array(Image.open(filepaths[n].replace('resized', 'all')), dtype=np.uint8)
         ax.imshow(im)
         buf = []
