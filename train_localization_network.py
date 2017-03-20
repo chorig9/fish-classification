@@ -9,16 +9,7 @@ filepaths = data.create_image_list(annotations)
 
 X, Y = data.get_resized_input_data(filepaths, annotations)
 
-# get indexes for train and test data
-test, train = utils.random_split_indexes(len(X))
-
-X_test = X[test]
-X_train = X[train]
-
-Y_test = Y[test]
-Y_train = Y[train]
-
-# X_train,Y_train, X_test, Y_test, test_images = utils.split_data(X, Y, 0.1,seed=1337, ret_filepaths=False)
+X_train,Y_train, X_test, Y_test = utils.split_data(X, Y, 0.1,seed=1337, ret_filepaths=False)
 
 net = network.Network()
 

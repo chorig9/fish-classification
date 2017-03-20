@@ -10,19 +10,7 @@ annotations = data.load_annotations()
 images_list = data.create_image_list(annotations)
 
 X, Y = data.get_resized_input_data(images_list, annotations)
-
-# get indexes for train and test data
-test, train = utils.random_split_indexes(20)
-
-X_test = X[test]
-X_train = X[train]
-
-Y_test = Y[test]
-Y_train = Y[train]
-
-test_images = images_list[test]
-
-# X_train,Y_train, X_test, Y_test, test_images = utils.split_data(X, Y, 0.1,seed=1337, fpaths=images_list, ret_filepaths=True)
+X_train,Y_train, X_test, Y_test, test_images = utils.split_data(X, Y, 0.1,seed=1337, fpaths=images_list, ret_filepaths=True)
 
 print("Selected dataset shape:", np.shape(X_train))
 # Train on that dataset

@@ -46,7 +46,7 @@ def create_image_list(annotations):
     Args:
         annotations: dictionary returend by load_annotations()
     Returns:
-        numpy array of image names (which have annotations)
+        list of image names (which have annotations)
     """
     extension = 'jpg'
     image_list = []
@@ -56,7 +56,7 @@ def create_image_list(annotations):
     for file_name in file_list:
         if os.path.basename(file_name) in annotations.keys():
             image_list.append(os.path.basename(file_name))
-    return np.array(image_list)
+    return image_list
 
 
 def resize_images_and_annotations(image_list, annotations):
@@ -114,7 +114,7 @@ def get_resized_input_data(image_list, annotations):
         annotations: dictionary with [x, width, y, height] for every file
 
     Returns:
-        Numpy array of resized images and numpy array of corresponding annotations
+        list of resized images and lsit of corresponding annotations
     """
     X = []
     Y = []
@@ -124,7 +124,7 @@ def get_resized_input_data(image_list, annotations):
         X.append(np.load(path + '.npy'))
         Y.append(annotations[image])
 
-    return np.array(X), np.array(Y)
+    return X, Y
 
 
 def get_resized_image_path(imagename):
