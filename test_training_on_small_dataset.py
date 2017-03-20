@@ -22,6 +22,8 @@ Y_train = Y[train]
 
 test_images = images_list[test]
 
+# X_train,Y_train, X_test, Y_test, test_images = utils.split_data(X, Y, 0.1,seed=1337, fpaths=images_list, ret_filepaths=True)
+
 print("Selected dataset shape:", np.shape(X_train))
 # Train on that dataset
 net = network.Network()

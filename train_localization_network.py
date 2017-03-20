@@ -18,6 +18,8 @@ X_train = X[train]
 Y_test = Y[test]
 Y_train = Y[train]
 
+# X_train,Y_train, X_test, Y_test, test_images = utils.split_data(X, Y, 0.1,seed=1337, ret_filepaths=False)
+
 net = network.Network()
 
 # Train using classifier

@@ -33,11 +33,21 @@ def create_annotations():
 
 
 def load_annotations():
+    """
+    Returns:
+        dictionary containing list [xstart, width, ystart, height] for every filename
+    """
     with open(box_annotations_path) as data_file:
         return json.load(data_file)
 
 
 def create_image_list(annotations):
+    """
+    Args:
+        annotations: dictionary returend by load_annotations()
+    Returns:
+        numpy array of image names (which have annotations)
+    """
     extension = 'jpg'
     image_list = []
     file_glob = os.path.join(image_dir, '*.' + extension)
@@ -50,6 +60,12 @@ def create_image_list(annotations):
 
 
 def resize_images_and_annotations(image_list, annotations):
+    """
+    Overrides original images with resized ones, and creates proper annotations.
+    Args:
+        image_list: images names to be resized
+        annotations: dictionary with [x, width, y, height] for every file
+    """
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
@@ -74,6 +90,14 @@ def resize_images_and_annotations(image_list, annotations):
 
 
 def resize_images_to_npy(width, height, image_list):
+    """
+    Resizes images and saves them to 'resized_output'
+    Args:
+        width: of target image
+        height: of target image
+        image_list: images to resize
+
+    """
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
@@ -84,6 +108,14 @@ def resize_images_to_npy(width, height, image_list):
 
 
 def get_resized_input_data(image_list, annotations):
+    """
+    Args:
+        image_list: image names to be loaded
+        annotations: dictionary with [x, width, y, height] for every file
+
+    Returns:
+        Numpy array of resized images and numpy array of corresponding annotations
+    """
     X = []
     Y = []
     for image in image_list:
