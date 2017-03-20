@@ -1,5 +1,6 @@
+import cv2
+import os
 import numpy as np
-from PIL import Image
 from matplotlib import patches
 import data
 import matplotlib.pyplot as plt
@@ -10,7 +11,7 @@ def run_inference_on_image():
 
     net = network.Network()
     model = net.get_model()
-    model.load('localize_network.net')
+    #model.load('localize_network.net')
 
     annotations = data.load_annotations()
     filepaths = data.create_image_list(annotations)
@@ -24,11 +25,11 @@ def run_inference_on_image():
         #im2 = np.load(data.get_resized_image_path(imagename))
         #ax.imshow(im2)
         #plt.pause(5)
-        im = np.array(Image.open(data.get_image_path(imagename)), dtype=np.uint8)
+        image = cv2.imread(os.path.join('train/all', imagename))
+        im = np.array(image, dtype=np.uint8)
         ax.imshow(im)
         #predictions = model.predict([input])
-        predictions = annotations[imagename]
-        print(predictions)
+        predictions = annotations[imagename] #### TEST
 
         x = round(predictions[0])
         width = round(predictions[1])

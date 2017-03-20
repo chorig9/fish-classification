@@ -46,24 +46,25 @@ def create_image_list(annotations):
     for file_name in file_list:
         if os.path.basename(file_name) in annotations.keys():
             image_list.append(os.path.basename(file_name))
-    return image_list
+    return np.array(image_list)
 
 
 def resize_images_and_annotations(image_list, annotations):
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
-        height, width, _ = image.shape
+        im_height, im_width, _ = image.shape
+
+        scale_x = 1280.0 / im_width
+        scale_y = 720.0 / im_height
 
         basename = os.path.basename(image_name)
-        x_axis = annotations[basename][:2]
-        y_axis = annotations[basename][-2:]
+        x = annotations[basename][0]
+        width = annotations[basename][1]
+        y = annotations[basename][2]
+        height = annotations[basename][3]
 
-        x_axis *= round(1280 / width)
-        y_axis *= round(720 / height)
-
-        print(basename)
-        annotations[basename] = x_axis + y_axis
+        annotations[basename] = [x * scale_x, width * scale_x, y * scale_y, height * scale_y]
 
         image = cv2.resize(image, (1280, 720))
         cv2.imwrite(path, image)
@@ -91,7 +92,7 @@ def get_resized_input_data(image_list, annotations):
         X.append(np.load(path + '.npy'))
         Y.append(annotations[image])
 
-    return X, Y
+    return np.array(X), np.array(Y)
 
 
 def get_resized_image_path(imagename):

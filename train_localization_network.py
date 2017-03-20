@@ -1,14 +1,22 @@
 from __future__ import division, print_function, absolute_import
 
 import data
-from utils import *
+import utils
 import network
 
 annotations = data.load_annotations()
 filepaths = data.create_image_list(annotations)
 
 X, Y = data.get_resized_input_data(filepaths, annotations)
-X, Y, X_test, Y_test = split_data(X, Y, 0.1)
+
+# get indexes for train and test data
+test, train = utils.random_split_indexes(len(X))
+
+X_test = X[test]
+X_train = X[train]
+
+Y_test = Y[test]
+Y_train = Y[train]
 
 net = network.Network()
 
@@ -18,7 +26,7 @@ model = net.get_model()
 # Load previously trained network snapshot
 #model.load('localize_network.net')
 
-model.fit(X, Y, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
+model.fit(X_train, Y_train, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
           show_metric=True, batch_size=50, run_id='bounding_box_network')
 
 model.save('localize_network.net')
