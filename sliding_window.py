@@ -83,12 +83,10 @@ def run_sliding_window():
 
     input_vectors, labels = data.get_resized_input_data(filepaths, annotations)
 
-    fig1 = plt.figure(1)
+    fig1 = plt.figure()
     ax1 = fig1.add_subplot(111, aspect='equal')
 
-    window_size = 200
-
-    plt.pause(0.5)
+    window_size = 100
 
     # Creates node ID --> English string lookup.
     node_lookup = NodeLookup()
@@ -96,10 +94,9 @@ def run_sliding_window():
 
     with tf.Session() as sess:
 
-        print(sess.graph.get_all_collection_keys())
-
         for imagename, input in zip(filepaths[:3], input_vectors[:3]):
             image = cv2.imread(data.get_image_path(imagename))
+            ax1.imshow(image)
             height, width, _ = image.shape
 
             window_x = 0
@@ -129,15 +126,17 @@ def run_sliding_window():
                 window_x += window_size
                 if window_x + window_size > width:
                     window_x = 0
-                    window_y += 100
+                    window_y += window_size
 
             ax1.imshow(image)
             for pos in positions:
                 x, y = pos
                 rect = patches.Rectangle((x, y), window_size, window_size, linewidth=1, edgecolor='r', facecolor='none')
                 ax1.add_patch(rect)
+            plt.pause(0.5)
 
             plt.cla()
+
 
 
 run_sliding_window()
