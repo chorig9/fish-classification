@@ -2,6 +2,8 @@ import cv2
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import patches
+
 import data
 import re
 
@@ -84,9 +86,6 @@ def run_sliding_window():
     fig1 = plt.figure(1)
     ax1 = fig1.add_subplot(111, aspect='equal')
 
-    fig2 = plt.figure(2)
-    ax2 = fig2.add_subplot(111, aspect='equal')
-
     window_size = 200
 
     plt.pause(0.5)
@@ -97,9 +96,10 @@ def run_sliding_window():
 
     with tf.Session() as sess:
 
-        for imagename, input in zip(filepaths[:1], input_vectors[:1]):
+        print(sess.graph.get_all_collection_keys())
+
+        for imagename, input in zip(filepaths[:3], input_vectors[:3]):
             image = cv2.imread(data.get_image_path(imagename))
-            ax1.imshow(image)
             height, width, _ = image.shape
 
             window_x = 0
@@ -109,13 +109,10 @@ def run_sliding_window():
 
             while window_x + window_size < width and window_y + window_size < height:
                 sub_image = image[window_y:(window_y + window_size), window_x:(window_x + window_size)]
-                cv2.imwrite('D:\\t\\' + imagename, sub_image)
-                image_data = tf.gfile.FastGFile('D:\\t\\' + imagename, 'rb').read()
-                ax2.imshow(sub_image)
 
                 softmax_tensor = sess.graph.get_tensor_by_name('softmax:0')
                 predictions = sess.run(softmax_tensor,
-                                       {'DecodeJpeg/contents:0': image_data})
+                                       {'Cast:0': sub_image})
                 predictions = np.squeeze(predictions)
                 top_k = predictions.argsort()[-5:][::-1]
 
@@ -125,7 +122,7 @@ def run_sliding_window():
                     human_string = node_lookup.id_to_string(node_id)
                     if 'shark' in human_string or 'fish' in human_string:
                         fish = True
-                        
+
                 if fish:
                     positions.append((window_x, window_y))
 
@@ -134,9 +131,12 @@ def run_sliding_window():
                     window_x = 0
                     window_y += 100
 
-                plt.pause(0.5)
+            ax1.imshow(image)
+            for pos in positions:
+                x, y = pos
+                rect = patches.Rectangle((x, y), window_size, window_size, linewidth=1, edgecolor='r', facecolor='none')
+                ax1.add_patch(rect)
 
-            plt.pause(0.5)
             plt.cla()
 
 
