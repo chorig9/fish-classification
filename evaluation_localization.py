@@ -22,9 +22,6 @@ def run_inference_on_image():
     ax = fig.add_subplot(111, aspect='equal')
 
     for imagename, input in zip(filepaths, input_vectors):
-        #im2 = np.load(data.get_resized_image_path(imagename))
-        #ax.imshow(im2)
-        #plt.pause(5)
         image = cv2.imread(os.path.join('train/all', imagename))
         im = np.array(image, dtype=np.uint8)
         ax.imshow(im)
