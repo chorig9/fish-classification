@@ -9,6 +9,7 @@ original_annotation_path = os.path.join(workspace, 'annotations', 'all.json')
 box_annotations_path = os.path.join(workspace, 'annotations', 'resized_all.json')
 image_dir = os.path.join(workspace, 'train', 'all')
 resized_output = os.path.join(workspace, 'train', 'resized')
+croped_output = os.path.join(workspace, 'train', 'cropped')
 
 
 def create_annotations():
@@ -126,27 +127,23 @@ def get_resized_input_data(image_list, annotations):
 
     return X, Y
 
-def get_input_data(image_list):
+def crop_images(image_list, bounding_box_data):
     """
     Args:
         image_list: image names to be loaded
-
-    Returns:
-        list of resized images and lsit of corresponding annotations
+        bounding_box_data: coordinates of crop
     """
-    classes = ["ALB", "BET", "DOL", "LAG", "NoF", "OTHER", "SHARK", "YFT"]
 
-    X = []
-    Y = []
     for image in image_list:
+        x = bounding_box_data[image][0]
+        w = bounding_box_data[image][1]
+        y = bounding_box_data[image][2]
+        h = bounding_box_data[image][3]
 
-        for img_class in classes:
-            path = os.path.join(workspace, img_class, image)
-            if os.path.isfile(path):
-                X.append(cv2.imread())
-                Y.append(annotations[image])
+        path = get_image_path(image)
 
-    return X, Y
+        img = cv2.imread(path)[y:y + h, x:x + w]
+        cv2.imwrite(os.path.join(croped_output, image), img)
 
 def get_resized_image_path(imagename):
     return os.path.join(resized_output, imagename) + '.npy'
@@ -161,3 +158,9 @@ if __name__ == "__main__":
     image_list = create_image_list(annotations)
     resize_images_and_annotations(image_list, annotations)
     resize_images_to_npy(256, 144, image_list)
+
+# classes = ["ALB", "BET", "DOL", "LAG", "NoF", "OTHER", "SHARK", "YFT"]
+#
+# for img_class in classes:
+#     path = os.path.join(workspace, img_class, image)
+#     if os.path.isfile(path):

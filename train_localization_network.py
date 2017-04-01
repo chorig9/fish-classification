@@ -14,7 +14,7 @@ X_train,Y_train, X_test, Y_test = utils.split_data(X, Y, 0.1,seed=1337, ret_file
 net = network.Network()
 
 # Train using classifier
-model = net.get_cropping_model()
+model = net.get_model()
 
 # Load previously trained network snapshot
 #model.load('localize_network.net')
