@@ -7,14 +7,14 @@ import network
 annotations = data.load_annotations()
 filepaths = data.create_image_list(annotations)
 
-X, Y = data.get_resized_input_data(filepaths, annotations)
+X, Y = data.get(filepaths, annotations)
 
 X_train,Y_train, X_test, Y_test = utils.split_data(X, Y, 0.1,seed=1337, ret_filepaths=False)
 
 net = network.Network()
 
 # Train using classifier
-model = net.get_cropping_model()
+model = net.get_entire_model()
 
 # Load previously trained network snapshot
 #model.load('localize_network.net')

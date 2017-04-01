@@ -10,8 +10,8 @@ import network
 def run_inference_on_image():
 
     net = network.Network()
-    model = net.get_model()
-    #model.load('localize_network.net')
+    model = net.get_cropping_model()
+    model.load('localize_network.net')
 
     annotations = data.load_annotations()
     filepaths = data.create_image_list(annotations)
@@ -28,8 +28,7 @@ def run_inference_on_image():
         image = cv2.imread(os.path.join('train/all', imagename))
         im = np.array(image, dtype=np.uint8)
         ax.imshow(im)
-        #predictions = model.predict([input])
-        predictions = annotations[imagename] #### TEST
+        predictions = model.predict([input])[0]
 
         x = round(predictions[0])
         width = round(predictions[1])

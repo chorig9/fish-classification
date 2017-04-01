@@ -126,6 +126,27 @@ def get_resized_input_data(image_list, annotations):
 
     return X, Y
 
+def get_input_data(image_list):
+    """
+    Args:
+        image_list: image names to be loaded
+
+    Returns:
+        list of resized images and lsit of corresponding annotations
+    """
+    classes = ["ALB", "BET", "DOL", "LAG", "NoF", "OTHER", "SHARK", "YFT"]
+
+    X = []
+    Y = []
+    for image in image_list:
+
+        for img_class in classes:
+            path = os.path.join(workspace, img_class, image)
+            if os.path.isfile(path):
+                X.append(cv2.imread())
+                Y.append(annotations[image])
+
+    return X, Y
 
 def get_resized_image_path(imagename):
     return os.path.join(resized_output, imagename) + '.npy'
