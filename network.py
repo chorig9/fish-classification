@@ -12,12 +12,8 @@ class Network:
             return tf.reduce_mean(l2_distance)
 
     def accuracy(self, y_pred, y_true, x=None):
-        with tf.name_scope('InsideAccuracy'):
-            conditions = [False, True, False, True]
-            a = tf.where(conditions, tf.matrix_transpose(y_pred), tf.matrix_transpose(y_true))
-            b = tf.where(not conditions, tf.matrix_transpose(y_pred), tf.matrix_transpose(y_true))
-            ok = tf.reduce_all(tf.greater(a, b), axis=0)
-            return tf.cast(tf.count_nonzero(ok), tf.float32)
+        with tf.name_scope('Accuracy'):
+            return self.l2_loss(y_pred, y_true)
 
     def get_model(self, size_input_1, size_input_2):
         # Convolutional network building
