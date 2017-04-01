@@ -19,7 +19,7 @@ net = network.Network()
 model = net.get_model(384, 384)
 
 # Load previously trained network snapshot
-#model.load('localization_network.net')
+#model.load('localize_network.net')
 
 model.fit(X_train, Y_train, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
           show_metric=True, batch_size=50, run_id='bounding_box_network')
