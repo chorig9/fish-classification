@@ -139,10 +139,10 @@ def crop_images(image_list, bounding_box_data):
     """
 
     for image in image_list:
-        x = bounding_box_data[image][0]
-        w = bounding_box_data[image][1]
-        y = bounding_box_data[image][2]
-        h = bounding_box_data[image][3]
+        x = int(bounding_box_data[image][0])
+        w = int(bounding_box_data[image][1])
+        y = int(bounding_box_data[image][2])
+        h = int(bounding_box_data[image][3])
 
         path = get_image_path(image)
 
@@ -154,7 +154,7 @@ def crop_on_annotations():
     """
         creates crop of images using annotations (not model predictions)
     """
-    if len(os.listdir(cropped_output)) != 0:
+    if len(os.listdir(cropped_output)) == 0:
         annotations = load_annotations()
         image_list = create_image_list(annotations)
         crop_images(image_list, annotations)
@@ -222,6 +222,6 @@ def get_cropped_image_path(imagename):
 
 if __name__ == "__main__":
     resize_images_and_annotations()
-    resize_images_to_npy(256, 144)
+    resize_images_to_npy(384, 384)
     crop_on_annotations()
 

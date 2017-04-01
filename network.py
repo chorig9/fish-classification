@@ -19,9 +19,9 @@ class Network:
             ok = tf.reduce_all(tf.greater(a, b), axis=0)
             return tf.cast(tf.count_nonzero(ok), tf.float32)
 
-    def get_model(self):
+    def get_model(self, size_input_1, size_input_2):
         # Convolutional network building
-        network = input_data(shape=[None, 144, 256, 3])
+        network = input_data(shape=[None, size_input_1, size_input_2, 3])
         network = conv_2d(network, 64, 2, activation='relu')
         network = conv_2d(network, 16, 2, activation='relu')
         network = max_pool_2d(network, 2)
