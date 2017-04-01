@@ -10,11 +10,12 @@ import network
 
 predicted_annotations_path = os.path.join(data.workspace, 'annotations', 'predictions.json')
 
-def predict_bounding_boxes():
+# Saves predicted bounding boxes to json file
+def predict_bounding_boxes(model_filename):
     with tf.Graph().as_default():
         net = network.Network()
-        model = net.get_model()
-        model.load('localize_network.net')
+        model = net.get_model(384, 384)
+        model.load(model_filename)
 
         annotations = data.load_annotations()
         filepaths = data.create_image_list(annotations)
@@ -37,11 +38,12 @@ def predict_bounding_boxes():
             json.dump(predicted_annotations, data_file)
 
 
-def evaluate_classifier():
+
+def evaluate_classifier(model_filename):
     with tf.Graph().as_default():
         classfier_net = classifier.Classifier()
         classification_model = classfier_net.get_model(122, 122)
-        classification_model.load('classify_network.net')
+        classification_model.load(model_filename)
 
         annotations = data.load_annotations()
         image_list = data.create_image_list(annotations)
@@ -51,12 +53,14 @@ def evaluate_classifier():
 
         with open(predicted_annotations_path) as data_file:
             bounding_box_data = json.load(data_file)
+        
+        #bounding_box_data = data.load_annotations()
 
         for filepath in image_list:
-            x = bounding_box_data[filepath][0]
-            w = bounding_box_data[filepath][1]
-            y = bounding_box_data[filepath][2]
-            h = bounding_box_data[filepath][3]
+            x = int(bounding_box_data[filepath][0])
+            w = int(bounding_box_data[filepath][1])
+            y = int(bounding_box_data[filepath][2])
+            h = int(bounding_box_data[filepath][3])
 
             crop = cv2.imread(data.get_image_path(filepath))
             crop = crop[y:y + h, x:x + w]
@@ -72,13 +76,13 @@ def evaluate_classifier():
             if data.classes[np.argmax(classification)] == data.get_image_label(filepath):
                 ok += 1
 
-            print(data.classes[np.argmax(classification)] + " " + data.get_image_label(filepath))
+            #print(data.classes[np.argmax(classification)] + " " + data.get_image_label(filepath))
 
             n += 1
 
-        print(ok / n)
+            print(ok / n)
 
 
 if __name__ == "__main__":
-   # predict_bounding_boxes()
-    evaluate_classifier()
+    predict_bounding_boxes('localize_network.net')
+    evaluate_classifier('classify_network.net')
