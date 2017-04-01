@@ -62,6 +62,12 @@ def evaluate_classifier(model_filename):
             y = int(bounding_box_data[filepath][2])
             h = int(bounding_box_data[filepath][3])
 
+            # Extending bounding box by 10%
+            x -= int(0.1 * w)
+            w += int(0.2 * w)
+            y -= int(0.1 * h)
+            h += int(0.2 * h)
+
             crop = cv2.imread(data.get_image_path(filepath))
             crop = crop[y:y + h, x:x + w]
             if crop is None:

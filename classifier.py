@@ -18,8 +18,9 @@ class Classifier:
         network = conv_2d(network, 8, 3, activation='relu')
         network = max_pool_2d(network, 2)
         network = fully_connected(network, 512, activation='relu')
+        network = dropout(network, 0.5)
         network = fully_connected(network, 7, activation='softmax')
-        network = regression(network, optimizer='adam', learning_rate=0.001)
+        network = regression(network, optimizer='adam', learning_rate=0.00001)
 
         model = tflearn.DNN(network, tensorboard_verbose=0)
 

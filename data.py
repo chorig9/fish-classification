@@ -144,6 +144,11 @@ def crop_images(image_list, bounding_box_data):
         y = int(bounding_box_data[image][2])
         h = int(bounding_box_data[image][3])
 
+        x -= int(0.1 * w)
+        w += int(0.2 * w)
+        y -= int(0.1 * h)
+        h += int(0.2 * h)
+
         path = get_image_path(image)
 
         img = cv2.imread(path)[y:y + h, x:x + w]
@@ -154,10 +159,10 @@ def crop_on_annotations():
     """
         creates crop of images using annotations (not model predictions)
     """
-    if len(os.listdir(cropped_output)) == 0:
-        annotations = load_annotations()
-        image_list = create_image_list(annotations)
-        crop_images(image_list, annotations)
+    #if len(os.listdir(cropped_output)) == 0:
+    annotations = load_annotations()
+    image_list = create_image_list(annotations)
+    crop_images(image_list, annotations)
 
 
 def get_image_label(image, one_hot=False):

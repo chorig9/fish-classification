@@ -18,18 +18,18 @@ class Network:
     def get_model(self, size_input_1, size_input_2):
         # Convolutional network building
         network = input_data(shape=[None, size_input_1, size_input_2, 3])
-        network = conv_2d(network, 64, 2, activation='relu')
-        network = conv_2d(network, 16, 2, activation='relu')
+        network = conv_2d(network, 16, 3, activation='relu')
+        network = conv_2d(network, 16, 3, activation='relu')
         network = max_pool_2d(network, 2)
-        network = conv_2d(network, 16, 2, activation='relu')
-        network = conv_2d(network, 8, 2, activation='relu')
+        network = conv_2d(network, 16, 3, activation='relu')
+        network = conv_2d(network, 8, 3, activation='relu')
         network = max_pool_2d(network, 2)
-        network = conv_2d(network, 4, 2, activation='relu')
-        network = fully_connected(network, 256, activation='relu')
-        # network = dropout(network, 0.5)
+        network = conv_2d(network, 8, 3, activation='relu')
+        network = fully_connected(network, 512, activation='relu')
+        network = dropout(network, 0.5)
         network = fully_connected(network, 4, activation='linear')
         network = regression(network, optimizer='adam',
-                             learning_rate=0.0001, loss=self.l2_loss, metric=self.accuracy)
+                             learning_rate=0.00001, loss=self.l2_loss)
 
         model = tflearn.DNN(network, tensorboard_verbose=0)
 
