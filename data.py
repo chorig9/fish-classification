@@ -154,7 +154,7 @@ def crop_on_annotations():
     """
         creates crop of images using annotations (not model predictions)
     """
-    if len(os.listdir(cropped_output)) != 0:
+    if len(os.listdir(cropped_output)) == 0:
         annotations = load_annotations()
         image_list = create_image_list(annotations)
         crop_images(image_list, annotations)
