@@ -10,7 +10,7 @@ import network
 def run_inference_on_image():
 
     net = network.Network()
-    model = net.get_model()
+    model = net.get_model(144, 256)
     model.load('localize_network.net')
 
     annotations = data.load_annotations()
