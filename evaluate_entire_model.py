@@ -1,5 +1,6 @@
+from matplotlib import patches
+
 import classifier
-import data
 import numpy as np
 import cv2
 import tensorflow as tf
@@ -7,6 +8,7 @@ import json
 import os
 import data
 import network
+import matplotlib.pyplot as plt
 
 predicted_annotations_path = os.path.join(data.workspace, 'annotations', 'predictions.json')
 
@@ -26,12 +28,6 @@ def predict_bounding_boxes(model_filename):
 
         for imagename, input in zip(filepaths, input_vectors):
             predictions = model.predict([input])[0]
-
-            x = round(predictions[0])
-            width = round(predictions[1])
-            y = round(predictions[2])
-            height = round(predictions[3])
-
             predicted_annotations[imagename] = predictions
 
         with open(predicted_annotations_path, 'w') as data_file:
@@ -53,16 +49,23 @@ def evaluate_classifier(model_filename):
 
         with open(predicted_annotations_path) as data_file:
             bounding_box_data = json.load(data_file)
-        
-        #bounding_box_data = data.load_annotations()
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, aspect='equal')
 
         for filepath in image_list:
+
             x = int(bounding_box_data[filepath][0])
             w = int(bounding_box_data[filepath][1])
             y = int(bounding_box_data[filepath][2])
             h = int(bounding_box_data[filepath][3])
 
             crop = cv2.imread(data.get_image_path(filepath))
+            ax.imshow(crop)
+
+            rect = patches.Rectangle((x, y), w, h, linewidth=1, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+
             crop = crop[y:y + h, x:x + w]
             if crop is None:
                 continue
@@ -73,14 +76,18 @@ def evaluate_classifier(model_filename):
 
             classification = classification_model.predict([crop])[0]
 
+            color = 'red'
             if data.classes[np.argmax(classification)] == data.get_image_label(filepath):
                 ok += 1
-
-            #print(data.classes[np.argmax(classification)] + " " + data.get_image_label(filepath))
+                color = 'blue'
 
             n += 1
 
-            print(ok / n)
+            ax.text(x + 10, y - 20, data.classes[np.argmax(classification)], bbox={'facecolor': color, 'alpha': 0.5})
+            ax.text(0, 0, data.get_image_label(filepath),bbox={'facecolor':'white'})
+
+            plt.pause(0.5)
+            plt.cla()
 
 
 if __name__ == "__main__":

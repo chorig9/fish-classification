@@ -19,7 +19,7 @@ model = net.get_model(size[0], size[1])
 # Load previously trained network snapshot
 model.load('classify_network.net')
 
-model.fit(X_train, Y_train, n_epoch=10, shuffle=True, validation_set=(X_test, Y_test),
+model.fit(X_train, Y_train, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
           show_metric=True, batch_size=100, run_id='classification_network')
 
 model.save('classify_network.net')

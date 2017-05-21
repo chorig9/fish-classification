@@ -28,7 +28,7 @@ class Network:
         network = dropout(network, 0.5)
         network = fully_connected(network, 4, activation='linear')
         network = regression(network, optimizer='adam',
-                             learning_rate=0.001, loss=self.l2_loss, metric=self.accuracy)
+                             learning_rate=0.001, loss=self.l2_loss)
 
         model = tflearn.DNN(network, tensorboard_verbose=0)
 

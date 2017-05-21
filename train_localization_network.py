@@ -22,6 +22,6 @@ model = net.get_model(384, 384)
 #model.load('localize_network.net')
 
 model.fit(X_train, Y_train, n_epoch=1, shuffle=True, validation_set=(X_test, Y_test),
-          show_metric=True, batch_size=10, run_id='bounding_box_network')
+          show_metric=True, batch_size=1, run_id='bounding_box_network')
 
 model.save('localize_network.net')
