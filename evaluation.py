@@ -15,10 +15,6 @@ def create_image_lists(image_dir):
   for extension in extensions:
     file_glob = os.path.join(image_dir, '*.' + extension)
     file_list.extend(gfile.Glob(file_glob))
- #images = []
- #for file_name in file_list:
- #  base_name = os.path.basename(file_name)
- #  images.append(base_name)
   return file_list
 
 

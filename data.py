@@ -9,6 +9,9 @@ original_annotation_path = os.path.join(workspace, 'annotations', 'all.json')
 box_annotations_path = os.path.join(workspace, 'annotations', 'resized_all.json')
 image_dir = os.path.join(workspace, 'train', 'all')
 resized_output = os.path.join(workspace, 'train', 'resized')
+cropped_output = os.path.join(workspace, 'train', 'cropped')
+
+classes = ['ALB', 'BET', 'DOL', 'LAG', 'OTHER', 'SHARK', 'YFT']
 
 
 def create_annotations():
@@ -59,13 +62,14 @@ def create_image_list(annotations):
     return image_list
 
 
-def resize_images_and_annotations(image_list, annotations):
+def resize_images_and_annotations():
     """
     Overrides original images with resized ones, and creates proper annotations.
-    Args:
-        image_list: images names to be resized
-        annotations: dictionary with [x, width, y, height] for every file
     """
+
+    annotations = create_annotations()
+    image_list = create_image_list(annotations)
+
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
@@ -89,15 +93,18 @@ def resize_images_and_annotations(image_list, annotations):
         json.dump(annotations, data_file)
 
 
-def resize_images_to_npy(width, height, image_list):
+def resize_images_to_npy(width, height):
     """
     Resizes images and saves them to 'resized_output'
     Args:
         width: of target image
         height: of target image
-        image_list: images to resize
 
     """
+
+    annotations = load_annotations()
+    image_list = create_image_list(annotations)
+
     for image_name in image_list:
         path = get_image_path(image_name)
         image = cv2.imread(path)
@@ -109,13 +116,10 @@ def resize_images_to_npy(width, height, image_list):
 
 def get_resized_input_data(image_list, annotations):
     """
-    Args:
-        image_list: image names to be loaded
-        annotations: dictionary with [x, width, y, height] for every file
-
     Returns:
-        list of resized images and lsit of corresponding annotations
+        list of resized images and list of corresponding annotations
     """
+
     X = []
     Y = []
     for image in image_list:
@@ -123,6 +127,88 @@ def get_resized_input_data(image_list, annotations):
 
         X.append(np.load(path + '.npy'))
         Y.append(annotations[image])
+
+    return X, Y
+
+
+def crop_images(image_list, bounding_box_data):
+    """
+    Args:
+        image_list: image names to be loaded
+        bounding_box_data: coordinates of crop
+    """
+
+    for image in image_list:
+        x = int(bounding_box_data[image][0])
+        w = int(bounding_box_data[image][1])
+        y = int(bounding_box_data[image][2])
+        h = int(bounding_box_data[image][3])
+
+        x -= int(0.1 * w)
+        w += int(0.2 * w)
+        y -= int(0.1 * h)
+        h += int(0.2 * h)
+
+        path = get_image_path(image)
+
+        img = cv2.imread(path)[y:y + h, x:x + w]
+        cv2.imwrite(os.path.join(cropped_output, image), img)
+
+
+def crop_on_annotations():
+    """
+        creates crop of images using annotations (not model predictions)
+    """
+    #if len(os.listdir(cropped_output)) == 0:
+    annotations = load_annotations()
+    image_list = create_image_list(annotations)
+    crop_images(image_list, annotations)
+
+
+def get_image_label(image, one_hot=False):
+    """
+    Args:
+        one_hot: specifies if labels should be in one hot vector format ([0,0,0,1,0,0,0])
+    """
+
+    for i in range(len(classes)):
+        path = os.path.join(workspace, 'train', classes[i], image)
+        if os.path.isfile(path):
+            if one_hot:
+                vec = [0] * len(classes)
+                vec[i] = 1
+                return vec
+            else:
+                return classes[i]
+
+    return None
+
+
+def get_cropped_input_data(size, one_hot=False):
+    """
+    Args:
+        one_hot: specifies if labels should be in one hot vector format ([0,0,0,1,0,0,0])
+    Returns:
+        list of cropped images and corresponding labels
+    """
+
+    image_list = os.listdir(cropped_output)
+
+    X = []
+    Y = []
+    for image in image_list:
+
+        cropped_path = os.path.join(cropped_output, image)
+        img = cv2.imread(cropped_path)
+
+        if img is None:
+            continue
+
+        label = get_image_label(image, one_hot)
+        if label is not None:
+            img = cv2.resize(img, size)
+            X.append(img)
+            Y.append(label)
 
     return X, Y
 
@@ -135,8 +221,12 @@ def get_image_path(imagename):
     return os.path.join(image_dir, imagename)
 
 
+def get_cropped_image_path(imagename):
+    return os.path.join(cropped_output, imagename)
+
+
 if __name__ == "__main__":
-    annotations = create_annotations()
-    image_list = create_image_list(annotations)
-    resize_images_and_annotations(image_list, annotations)
-    resize_images_to_npy(256, 144, image_list)
+    resize_images_and_annotations()
+    resize_images_to_npy(384, 384)
+    crop_on_annotations()
+

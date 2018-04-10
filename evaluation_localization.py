@@ -10,8 +10,8 @@ import network
 def run_inference_on_image():
 
     net = network.Network()
-    model = net.get_model()
-    #model.load('localize_network.net')
+    model = net.get_model(384,384)
+    model.load('localize_network.net')
 
     annotations = data.load_annotations()
     filepaths = data.create_image_list(annotations)
@@ -22,14 +22,10 @@ def run_inference_on_image():
     ax = fig.add_subplot(111, aspect='equal')
 
     for imagename, input in zip(filepaths, input_vectors):
-        #im2 = np.load(data.get_resized_image_path(imagename))
-        #ax.imshow(im2)
-        #plt.pause(5)
         image = cv2.imread(os.path.join('train/all', imagename))
         im = np.array(image, dtype=np.uint8)
         ax.imshow(im)
-        #predictions = model.predict([input])
-        predictions = annotations[imagename] #### TEST
+        predictions = model.predict([input])[0]
 
         x = round(predictions[0])
         width = round(predictions[1])
